@@ -11,6 +11,13 @@ class Device(BaseModel):
     online: bool
 
 
+class OptionalDevice(BaseModel):
+    name: str | None = None
+    room: str | None = None
+    temp: float | None = None
+    online: bool | None = None
+
+
 readings = [
     {"name": "front-door", "room": "hall",    "temp": 27.4, "online": True},
     {"name": "hall-lamp",  "room": "hall",    "temp": 26.1, "online": True},
@@ -59,3 +66,12 @@ def delete_device(name: str):
             readings.remove(device)
             return {"message" : "deleted " + name}
     raise HTTPException(status_code=404, detail = name + " not found")
+
+
+@app.patch("/devices/{name}")
+def patch_device(name: str, updated_device: OptionalDevice):
+    for index, device in enumerate(readings):
+        if device["name"] == name:
+            readings[index] = {**device, **updated_device.model_dump(exclude_unset=True)}
+            return readings[index]
+    raise HTTPException(status_code=404, detail=name + " not found")
