@@ -1,0 +1,3 @@
+1. Although the post request produced the same status code on both trials (201), the server was not the same. The server changed because the probe device was created twice, so upon sending the body again another device was added. Therefore, this request is not idempotent.
+2. This request (PUT) produced the same result when the body was sent twice. The status code that was sent both times was a 200. Therefore, this request is idempotent.
+3. This request (DELETE) did not change the state of the server when sent twice. That is, the device would have already been deleted so it would not be able to be deleted again since it was removed. The status code that was sent the first time was 200, the second one that was sent was 404. Therefore, this request is idempotent.
