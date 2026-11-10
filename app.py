@@ -11,6 +11,13 @@ class Device(BaseModel):
     online: bool
 
 
+class OptionalDevice(BaseModel):
+    name: str | None = None
+    room: str | None = None
+    temp: float | None = None
+    online: bool | None = None
+
+
 readings = [
     {"name": "front-door", "room": "hall",    "temp": 27.4, "online": True},
     {"name": "hall-lamp",  "room": "hall",    "temp": 26.1, "online": True},
@@ -35,6 +42,9 @@ def get_device(name: str):
 
 @app.post("/devices", status_code=201)
 def create_device(device: Device):
+    for existing_device in readings:
+        if existing_device["name"] == device.name:
+            raise HTTPException(status_code=409, detail="A device called " + device.name + " already exists")
     new_device = device.model_dump()
     readings.append(new_device)
     return new_device
