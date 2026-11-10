@@ -66,3 +66,12 @@ def delete_device(name: str):
             readings.remove(device)
             return {"deleted": name}
     raise HTTPException(status_code=404, detail = "No device called " + name)
+
+
+@app.patch("/devices/{name}")
+def patch_device(name: str, updated_device: OptionalDevice):
+    for index, device in enumerate(readings):
+        if device["name"] == name:
+            readings[index] = {**device, **updated_device.model_dump(exclude_unset=True)}
+            return readings[index]
+    raise HTTPException(status_code=404, detail="No device called " + name)
